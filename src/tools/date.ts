@@ -162,7 +162,29 @@ export const date_converter = {
     );
   },
   from_input: function (time?: Date | string | null): Date_Info {
-    let _time = time ? new Date(time) : new Date();
+    let _time = !!time && new Date(time);
+    if (_time && isNaN(_time.getTime())) {
+      if (typeof time === 'string') {
+        const splitter = time.includes('-')
+          ? '-'
+          : time.includes('/')
+          ? '/'
+          : undefined;
+        if (splitter) {
+          const [year, month, date] = time
+            .split(splitter)
+            .map((v) => parseInt(v));
+          if (isNaN(year) || isNaN(month) || isNaN(date)) {
+            _time = new Date();
+          } else {
+            _time = new Date(year, month - 1, date);
+          }
+        }
+      }
+    }
+    if (!_time || isNaN(_time.getTime())) {
+      _time = new Date();
+    }
 
     const year = _time.getFullYear();
     const month = _time.getMonth() + 1;
