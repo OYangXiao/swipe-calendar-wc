@@ -1,0 +1,36 @@
+{
+  "name": "swipe-calendar",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/swipe-calendar.js",
+  "exports": {
+    ".": "./dist/swipe-calendar.js"
+  },
+  "types": "types/my-element.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.21.5",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-image": "^3.0.2",
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@vitejs/plugin-legacy": "^4.0.3",
+    "lit": "^2.7.4",
+    "rollup": "^3.21.5",
+    "rollup-plugin-summary": "^2.0.0",
+    "tslib": "^2.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4",
+    "vite": "^4.3.5"
+  }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Lit + TS</title>
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="module" src="./src/swipe-calendar/index.ts"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .calendar-wrapper {
+        background-color: #252737;
+        padding: 8px 0;
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0">
+    <div id="selected-time"></div>
+
+    <!-- <swipe-calendar></swipe-calendar> -->
+    <div class="calendar-wrapper">
+      <swipe-calendar
+        id="calendar"
+        view="month"
+        no-weekends
+        selected-date="2023-3-3"
+        weekday-name="日,一,二,三,四,五,六"
+        cellHeight="50"
+        style-cell-title="color:cyan;"
+        style-cell-date="box-shadow: inset 0px 0px 14px 7px #c3ffd8;"
+        style-date-normal="color: orange;"
+        style-date-selected="color: chartreuse;"
+        style-date-disabled="color: darkred;"
+        style-date-not-this-month="color: fuchsia;"
+      >
+      </swipe-calendar>
+    </div>
+
+    <div style="margin-top: 10px">
+      <button id="view-toggle">点击切换月视图/周视图</button>
+    </div>
+
+    <div style="margin-top: 10px">
+      <input type="date" id="date-input" />
+      <button id="date-setter">修改日期</button>
+    </div>
+    <script>
+      var calendar = document.querySelector('#calendar');
+
+      // 监听日历组件选中的日期
+      calendar.addEventListener('date-change', (e) => {
+        if (e.detail) {
+          document.querySelector('#selected-time').innerHTML =
+            e.detail.year + '-' + e.detail.month + '-' + e.detail.date;
+        }
+      });
+
+      // 设置禁用日期
+      calendar.filter_disable = function (date) {
+        return date.year === 2023 && date.month === 5 && date.date === 25;
+      };
+
+      // 设置隐藏日期
+      calendar.filter_hide = function (date) {
+        return date.year === 2023 && date.month === 5 && date.date === 26;
+      };
+
+      // 修改月视图/周视图
+      document
+        .querySelector('#view-toggle')
+        .addEventListener('click', function () {
+          calendar.toggleViewChange();
+        });
+
+      // 修改日历组件日期
+      document
+        .querySelector('#date-setter')
+        .addEventListener('click', function () {
+          const date = document.querySelector('#date-input').value;
+          calendar.setDate(date);
+        });
+    </script>
+  </body>
+</html>
