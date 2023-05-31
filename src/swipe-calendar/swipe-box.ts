@@ -1,8 +1,8 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import * as date_tools from '../tools/date';
 
-const { WEEK_CONFIG, MONTHS, WEEKS, DATES } = date_tools;
+import * as date_tools from '../tools/date';
+const { MONTHS, WEEKS, DATES } = date_tools;
 
 /**
  * An example element.

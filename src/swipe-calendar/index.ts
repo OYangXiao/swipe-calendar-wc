@@ -7,7 +7,6 @@ import {
   WEEK_CONFIG,
   WEEKS,
   MONTHS,
-  DATES,
   prev_month,
   next_month,
   next_week,
@@ -18,7 +17,6 @@ import { JSON_parse_result } from '../tools/safe-json';
 import './weekday-title';
 import './swipe-box';
 import './day-cell';
-import { log } from '../tools/log';
 
 const today = new Date();
 
