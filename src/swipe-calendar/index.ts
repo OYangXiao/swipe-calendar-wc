@@ -202,10 +202,6 @@ export class SwipeCalendar extends LitElement {
           next_month(this._selected_date),
         ];
       } else {
-        console.log(
-          'this._selected_date changed',
-          this._selected_date.date_name
-        );
         this._showing_times = [
           prev_week(this._selected_date),
           this._selected_date.week_name,
@@ -219,16 +215,6 @@ export class SwipeCalendar extends LitElement {
 
   /* #region render methods */
   render() {
-    console.log('------------------render start------------------');
-    console.log(
-      'this.showing_times',
-      this.view,
-      this._showing_times,
-      MONTHS,
-      WEEKS,
-      DATES
-    );
-    console.log('------------------render end------------------');
     return html`
       <div class="ht-swipe-calendar">
         <weekday-title
@@ -237,16 +223,6 @@ export class SwipeCalendar extends LitElement {
           .weekday-name=${this['weekday-name']}
           .style-cell-title=${this['style-cell-title']}
         ></weekday-title>
-        <div style="color: white;">
-          month-name ${this._selected_date.month_name}
-        </div>
-        <div style="color: white;">
-          week-name ${this._selected_date.week_name}
-        </div>
-        <div style="color: white;">
-          date-name ${this._selected_date.date_name}
-        </div>
-
         <swipe-box
           .cell-height=${this['cell-height']}
           .view=${this.view}

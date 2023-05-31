@@ -152,8 +152,6 @@ export class SwipeBox extends LitElement {
 
     const new_time = date_tools[`${direction}_${view}`](selected_date);
 
-    // console.log('new time is', this.view, new_time);
-
     let week_name: string;
     if (view === 'month') {
       const month_weeks = MONTHS.get(new_time)!.week_names;
@@ -171,8 +169,6 @@ export class SwipeBox extends LitElement {
           )!
         : week_dates[direction === 'prev' ? week_dates.length - 1 : 0];
     const new_date = DATES.get(date_name)!;
-
-    // console.log('new date', new_date);
 
     this.dispatchEvent(
       new CustomEvent('date-change', {
@@ -197,7 +193,6 @@ export class SwipeBox extends LitElement {
     ) {
       this._offset_x = 0;
       if (_changedProperties.get('view') === 'week' && this.view === 'month') {
-        console.log('week -> month');
         // 如果是从week视图切换到month视图
         // 设置一个timeout保证view正确渲染
         // 然后再设置新的offset_y即可产生动画

@@ -65,11 +65,9 @@ function generate_month_data(year: number, month: number) {
     // 当前遍历到的week
     let date_names: string[] | undefined = undefined;
 
-    // console.log('\n\n------------ start new month');
     // 向前6天,向后6天,保证没有空的日期
     while (day_count < 31 + 6 * 2) {
       day_count++;
-      // console.log('\nday_count', day_count);
 
       const date_info = create_date_info(
         new Date(year, month - 1, 1 - 6 + day_count)
@@ -80,23 +78,8 @@ function generate_month_data(year: number, month: number) {
       // 在保留周末并且从周一开始的情况下,需要将周日的day_index变为6
       if (day_index_of_week < 0) day_index_of_week = 6;
 
-      // console.log(
-      //   day_count,
-      //   ' --- ',
-      //   'year',
-      //   year,
-      //   'month',
-      //   month,
-      //   'date info',
-      //   date_info.date_name,
-      //   day_index_of_week,
-      //   'real index',
-      //   DEFAULT_WEEKDAY_NAME[date_info.day]
-      // );
-
       // 如果是周末,并且不需要周末,就跳过
       if (no_weekends && (date_info.day === 0 || date_info.day === 6)) {
-        // console.log('skip weekends');
         continue;
       }
 
@@ -108,7 +91,6 @@ function generate_month_data(year: number, month: number) {
         last_date_name = date_info.date_name;
       }
 
-      // console.log('week start day', week_start_day);
       if (week_start_day === date_info.day) {
         // 如果这一天是一周的开始,就切换week的引用
         // week的名字是这一周的第一天的名字
@@ -133,7 +115,6 @@ function generate_month_data(year: number, month: number) {
         // 并且这一周是当前月的,就将它的名字写入month_names
         // 就将它写入months_weeks_dates
         // 如果生成了一个不属于需要的月份的week,就丢弃掉,以保证所有cache的week都属于用到的月份
-        // console.log('week', week);
         if (
           day_index_of_week === (no_weekends ? 4 : 6) &&
           date_names[date_names.length - 1] &&
@@ -141,7 +122,6 @@ function generate_month_data(year: number, month: number) {
             (date_name) => DATES.get(date_name)!.month_name === month_name
           )
         ) {
-          // console.log('ONE WEEK FULL', date_names, '\n\n');
           const week_name = date_names[0];
           const month_names: string[] = [];
 
@@ -217,7 +197,6 @@ export function next_month(date_info: Date_Info) {
 }
 export function prev_week(date_info: Date_Info) {
   const { month_name, week_index } = date_info;
-  console.log('get prev week of', date_info.date_name, date_info);
   if (week_index === 0) {
     const p_month = prev_month(date_info);
     const p_month_weeks = MONTHS.get(p_month)!.week_names;
@@ -226,13 +205,6 @@ export function prev_week(date_info: Date_Info) {
     if (p_month_week === date_info.week_name) {
       p_month_week = p_month_weeks[p_month_weeks.length - 2];
     }
-    console.log(
-      'p_month_weeks',
-      p_month_weeks,
-      p_month_weeks.length - 1,
-      p_month_weeks[p_month_weeks.length - 1],
-      p_month_week
-    );
     return p_month_week;
   } else {
     const month_weeks = MONTHS.get(month_name)!.week_names;
