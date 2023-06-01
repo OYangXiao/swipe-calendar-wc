@@ -14,8 +14,11 @@ import {
 } from '../tools/date';
 import { JSON_parse_result } from '../tools/safe-json';
 
+import { type WeekdayTitle } from './weekday-title';
 import './weekday-title';
+import { type SwipeBox } from './swipe-box';
 import './swipe-box';
+import { type DayCell } from './day-cell';
 import './day-cell';
 
 const today = new Date();
@@ -120,7 +123,7 @@ export class SwipeCalendar extends LitElement {
   }
 
   public toggleViewChange() {
-    this.view = this.view === 'month' ? 'week' : 'month';
+    this._swipe_box?.change_view();
   }
   /* #endregion */
 
@@ -129,6 +132,8 @@ export class SwipeCalendar extends LitElement {
   private _selected_date!: Date_Info;
   // 视图展示的前一月(周), 这一月(周), 下一月(周)
   private _showing_times: string[] = [];
+  // swipe-box的引用
+  private _swipe_box?: SwipeBox;
   /* #endregion */
 
   /* #region private methods */
@@ -142,21 +147,12 @@ export class SwipeCalendar extends LitElement {
   }
 
   private _on_click(e: Event) {
-    let el = e.target as Element;
-
+    let el = e.target as DayCell;
     // 如果点到date了,就向上使用parentElement获取数据
-    if (el.classList.contains('ht-swipe-calendar__date')) {
-      el = el.parentElement!;
-    }
 
-    if (el) {
-      const date_name = el.getAttribute('date-name');
-      if (date_name) {
-        const disabled_attr = el.getAttribute('disabled');
-        if (disabled_attr !== '' && disabled_attr !== 'true') {
-          this['selected-date'] = date_name;
-        }
-      }
+    if (el && 'date' in el) {
+      if (el.disabled) return;
+      this['selected-date'] = el.date.date_name;
     }
   }
   /* #endregion */
@@ -183,7 +179,7 @@ export class SwipeCalendar extends LitElement {
     if (changedProperties.has('selected-date')) {
       this._selected_date = date_converter.from_input(this['selected-date']);
 
-      const month = MONTHS.get(this._selected_date.month_name)
+      const month = MONTHS.get(this._selected_date.month_name);
       // 向外通报这次日期改变的新信息
       this.dispatchEvent(
         new CustomEvent('date-change', {
@@ -192,7 +188,9 @@ export class SwipeCalendar extends LitElement {
             view: this.view,
             month,
             week: WEEKS.get(this._selected_date.week_name),
-            show_month_days: month?.week_names.map((week_name) => WEEKS.get(week_name)!.date_names).flat()
+            show_month_days: month?.week_names
+              .map((week_name) => WEEKS.get(week_name)!.date_names)
+              .flat(),
           },
         })
       );
@@ -218,6 +216,11 @@ export class SwipeCalendar extends LitElement {
     }
   }
 
+  protected firstUpdated() {
+    this._swipe_box = this.renderRoot.querySelector('swipe-box') as SwipeBox;
+    console.log(this.renderRoot.querySelector('weekday-title') as WeekdayTitle);
+  }
+
   /* #endregion */
 
   /* #region render methods */
@@ -240,7 +243,11 @@ export class SwipeCalendar extends LitElement {
           >${this._showing_times.map(
             (time_name) =>
               html`
-                <div class="ht-swipe-calendar__month">
+                <div
+                  class="ht-swipe-calendar__month"
+                  time-name=${time_name}
+                  time-type=${this.view}
+                >
                   ${
                     // 如果是month视图,那么就取出前后三个月的月份数据,每个月包含其中周的名称
                     // 如果是week视图,那么前后三个周的周数据,每个周用数组包裹起来,结构就和月的结构相同
@@ -250,7 +257,10 @@ export class SwipeCalendar extends LitElement {
                     ).map(
                       (week_name) =>
                         html`
-                          <div class="ht-swipe-calendar__week">
+                          <div
+                            class="ht-swipe-calendar__week"
+                            week-name=${week_name}
+                          >
                             ${WEEKS.get(week_name)!.date_names.map(
                               (date_name) =>
                                 html`<day-cell
@@ -320,5 +330,8 @@ export class SwipeCalendar extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     'swipe-calendar': SwipeCalendar;
+    'swipe-box': SwipeBox;
+    'weekday-title': WeekdayTitle;
+    'day-cell': DayCell;
   }
 }

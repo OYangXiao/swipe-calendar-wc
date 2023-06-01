@@ -52,34 +52,34 @@ export class DayCell extends LitElement {
   filter_hide?: (date: Date_Info) => boolean;
 
   private _is_today = false;
-  private _date!: Date_Info;
+  public date!: Date_Info;
   private _is_selected = false;
   private _is_hidden = false;
-  private _is_disabled = false;
+  public disabled = false;
   private _not_this_month = false;
 
   protected willUpdate(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     if (_changedProperties.has('date-name')) {
-      this._date = DATES.get(this['date-name'])!;
+      this.date = DATES.get(this['date-name'])!;
 
       const today = new Date();
       const today_date_name = `${today.getFullYear()}-${
         today.getMonth() + 1
       }-${today.getDate()}`;
 
-      this._is_today = this._date.date_name === today_date_name;
-      this._is_hidden = this.filter_hide?.(this._date) ?? false;
-      this._is_disabled = this.filter_disable?.(this._date) ?? false;
-      this._not_this_month = !!this['month-name'] && this._date.month_name !== this['month-name'];
+      this._is_today = this.date.date_name === today_date_name;
+      this._is_hidden = this.filter_hide?.(this.date) ?? false;
+      this.disabled = this.filter_disable?.(this.date) ?? false;
+      this._not_this_month = !!this['month-name'] && this.date.month_name !== this['month-name'];
     }
 
     if (
       _changedProperties.has('date-name') ||
       _changedProperties.has('selected-date')
     ) {
-      this._is_selected = this._date === this['selected-date'];
+      this._is_selected = this.date === this['selected-date'];
     }
   }
 
@@ -98,17 +98,17 @@ export class DayCell extends LitElement {
           this._not_this_month && 'ht-swipe-calendar__date__not-this-month',
           this._is_today && 'ht-swipe-calendar__date__today',
           this._is_selected && 'ht-swipe-calendar__date__selected',
-          this._is_disabled && 'ht-swipe-calendar__date__disabled',
+          this.disabled && 'ht-swipe-calendar__date__disabled',
         ])}"
         style="${combine_attr([
           this['style-date-normal'],
           this._not_this_month && this['style-date-not-this-month'],
           this._is_today && this['style-date-today'],
           this._is_selected && this['style-date-selected'],
-          this._is_disabled && this['style-date-disabled'],
+          this.disabled && this['style-date-disabled'],
         ])}"
       >
-        ${this._date.date}
+        ${this.date.date}
       </div>
     </div>`;
   }

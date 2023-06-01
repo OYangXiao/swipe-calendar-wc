@@ -34,6 +34,7 @@ export declare class SwipeBox extends LitElement {
     private _onTouchMove;
     private _after_time_transition;
     private _after_height_transition;
+    change_view(offsetY?: number): void;
     protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
     protected firstUpdated(): void;
     render(): import("lit").TemplateResult<1>;

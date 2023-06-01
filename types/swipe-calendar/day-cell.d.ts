@@ -20,10 +20,10 @@ export declare class DayCell extends LitElement {
     filter_disable?: (date: Date_Info) => boolean;
     filter_hide?: (date: Date_Info) => boolean;
     private _is_today;
-    private _date;
+    date: Date_Info;
     private _is_selected;
     private _is_hidden;
-    private _is_disabled;
+    disabled: boolean;
     private _not_this_month;
     protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
     render(): import("lit").TemplateResult<1> | undefined;

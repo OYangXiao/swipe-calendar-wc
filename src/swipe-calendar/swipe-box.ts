@@ -4,6 +4,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import * as date_tools from '../tools/date';
 const { MONTHS, WEEKS, DATES } = date_tools;
 
+const VIEW_CHANGE_THROTTLE_PIXEL = 10;
+
 /**
  * An example element.
  *
@@ -105,41 +107,8 @@ export class SwipeBox extends LitElement {
       this._no_transition = true;
       // 横向滑动就是切换日期, 上一个月下一个月(或者上一周下一周)
       this._offset_x = offsetX;
-    } else if (Math.abs(offsetY) > 10) {
-      // 吃掉这次触摸事件, 防止触发点击事件
-      this._touch_start = undefined;
-      const { month_name, week_index } = this['selected-date'];
-      // 纵向滑动就是切换视图, 向下就是展开为月视图, 向上就是收起为周视图
-      this._offset_y = week_index * -this['cell-height'];
-      if (offsetY > 0) {
-        // 切换到month视图
-        this._total_height =
-          MONTHS.get(month_name)!.week_names.length * this['cell-height'];
-
-        // 从week切换到month期间, 会有一个动画
-        // 需要立刻更新内容, 以免展开区域时内容不可见
-        this.dispatchEvent(
-          new CustomEvent('view-change', {
-            detail: 'month',
-          })
-        );
-      } else {
-        this._no_transition = false;
-        // 切换到week视图
-        this._total_height = this['cell-height'];
-
-        // 从month视图切换到week视图时, 会有一个动画
-        // 可见内容逐渐减少
-        // 动画期间保持可见内容不变
-        // 直到动画结束后再更新内容
-        this._after_animation_action = () => {
-          this.dispatchEvent(
-            new CustomEvent('view-change', {
-              detail: 'week',
-            })
-          );
-        };
-      }
+    } else if (Math.abs(offsetY) > VIEW_CHANGE_THROTTLE_PIXEL) {
+      this.change_view(offsetY);
     }
   }
 
@@ -181,6 +150,49 @@ export class SwipeBox extends LitElement {
     if (this._after_animation_action) {
       this._after_animation_action();
       this._after_animation_action = undefined;
+    }
+  }
+
+  public change_view(offsetY?: number) {
+    const _offsetY =
+      typeof offsetY === 'undefined'
+        ? (this.view === 'month' ? -1 : 1) * VIEW_CHANGE_THROTTLE_PIXEL
+        : offsetY;
+
+    // 吃掉这次触摸事件, 防止触发点击事件
+    this._touch_start = undefined;
+    const { month_name, week_index } = this['selected-date'];
+    // 纵向滑动就是切换视图, 向下就是展开为月视图, 向上就是收起为周视图
+    this._offset_y = week_index * -this['cell-height'];
+
+    if (_offsetY > 0) {
+      // 切换到month视图
+      this._total_height =
+        MONTHS.get(month_name)!.week_names.length * this['cell-height'];
+
+      // 从week切换到month期间, 会有一个动画
+      // 需要立刻更新内容, 以免展开区域时内容不可见
+      this.dispatchEvent(
+        new CustomEvent('view-change', {
+          detail: 'month',
+        })
+      );
+    } else {
+      this._no_transition = false;
+      // 切换到week视图
+      this._total_height = this['cell-height'];
+
+      // 从month视图切换到week视图时, 会有一个动画
+      // 可见内容逐渐减少
+      // 动画期间保持可见内容不变
+      // 直到动画结束后再更新内容
+      this._after_animation_action = () => {
+        this.dispatchEvent(
+          new CustomEvent('view-change', {
+            detail: 'week',
+          })
+        );
+      };
     }
   }
 

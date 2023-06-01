@@ -1,6 +1,9 @@
 import { LitElement, PropertyValueMap } from 'lit';
+import { type WeekdayTitle } from './weekday-title';
 import './weekday-title';
+import { type SwipeBox } from './swipe-box';
 import './swipe-box';
+import { type DayCell } from './day-cell';
 import './day-cell';
 /**
  * An example element.
@@ -29,15 +32,20 @@ export declare class SwipeCalendar extends LitElement {
     toggleViewChange(): void;
     private _selected_date;
     private _showing_times;
+    private _swipe_box?;
     private _on_view_change;
     private _on_date_change;
     private _on_click;
     willUpdate(changedProperties: PropertyValueMap<any>): void;
+    protected firstUpdated(): void;
     render(): import("lit").TemplateResult<1>;
     static styles: import("lit").CSSResult;
 }
 declare global {
     interface HTMLElementTagNameMap {
         'swipe-calendar': SwipeCalendar;
+        'swipe-box': SwipeBox;
+        'weekday-title': WeekdayTitle;
+        'day-cell': DayCell;
     }
 }
