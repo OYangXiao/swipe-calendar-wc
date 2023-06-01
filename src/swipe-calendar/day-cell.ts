@@ -108,7 +108,7 @@ export class DayCell extends LitElement {
           this._is_disabled && this['style-date-disabled'],
         ])}"
       >
-        ${this._date.date} <span style="color:white;font-size:9px;margin-left: 6px;">${this._date.week_index}</span>
+        ${this._date.date}
       </div>
     </div>`;
   }

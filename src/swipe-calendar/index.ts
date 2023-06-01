@@ -182,9 +182,18 @@ export class SwipeCalendar extends LitElement {
 
     if (changedProperties.has('selected-date')) {
       this._selected_date = date_converter.from_input(this['selected-date']);
+
+      const month = MONTHS.get(this._selected_date.month_name)
+      // 向外通报这次日期改变的新信息
       this.dispatchEvent(
         new CustomEvent('date-change', {
-          detail: this._selected_date,
+          detail: {
+            date: this._selected_date,
+            view: this.view,
+            month,
+            week: WEEKS.get(this._selected_date.week_name),
+            show_month_days: month?.week_names.map((week_name) => WEEKS.get(week_name)!.date_names).flat()
+          },
         })
       );
     }

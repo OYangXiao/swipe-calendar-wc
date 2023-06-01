@@ -54,6 +54,7 @@
 
       // 监听日历组件选中的日期
       calendar.addEventListener('date-change', (e) => {
+        console.log('date-change', e.detail)
         if (e.detail) {
           document.querySelector('#selected-time').innerHTML =
             e.detail.year + '-' + e.detail.month + '-' + e.detail.date;
