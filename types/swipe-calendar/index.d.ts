@@ -1,22 +1,43 @@
 import { LitElement, PropertyValueMap } from 'lit';
+import type { Date_Info, ViewType, WeekStartDay } from '../types';
 import { type WeekdayTitle } from './weekday-title';
 import './weekday-title';
 import { type SwipeBox } from './swipe-box';
 import './swipe-box';
 import { type DayCell } from './day-cell';
 import './day-cell';
+export type DateChangeEvent = CustomEvent<{
+    date: Date_Info;
+    view: ViewType;
+    month: {
+        first_date_name: string;
+        last_date_name: string;
+        date_count: number;
+        week_names: string[];
+        dates: string[];
+    };
+    week: {
+        month_names: string[];
+        date_names: string[];
+    };
+}>;
 /**
- * An example element.
+ * a calendar element
  *
- * @slot - This element has a slot
- * @csspart button - The button
+ * change month by swipe left or right
+ * change view between month and week by swipe up or down
+ *
+ * select date by click or tap
+ *
+ * @fires date-change - fires when date changed
+ *
  */
 export declare class SwipeCalendar extends LitElement {
     'selected-date': string;
     'view': ViewType;
     'no-weekends': boolean;
     'week-start-day': WeekStartDay;
-    'weekday-name': string[];
+    'weekday-name': string | string[];
     'cell-height': number;
     'style-cell-title'?: string;
     'style-cell-date'?: string;

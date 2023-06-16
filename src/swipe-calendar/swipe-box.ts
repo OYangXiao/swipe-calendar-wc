@@ -1,8 +1,8 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-import * as date_tools from '../tools/date';
-const { MONTHS, WEEKS, DATES } = date_tools;
+import type { ViewType, Date_Info } from '../types';
+
 
 const VIEW_CHANGE_THROTTLE_PIXEL = 10;
 
@@ -78,6 +78,17 @@ export class SwipeBox extends LitElement {
       this._no_transition = false;
       // 横向滑动就是上一个月下一个月(或者上一周下一周)
       if (Math.abs(this._offset_x) > 0.2 * this._body_width) {
+
+        const new_time = date_tools[
+          `${this._offset_x < 0 ? 'next' : 'prev'}_${this.view}`
+        ](this['selected-date']);
+        if (!new_time) {
+          // 如果没有新的时间, 就代表达到max或者min了
+          // 返回之前的时间
+          this._offset_x = 0;
+          return;
+        }
+
         this._offset_x =
           this._offset_x > 0 ? this._body_width : -this._body_width;
       } else {
@@ -119,7 +130,8 @@ export class SwipeBox extends LitElement {
     const direction = this._offset_x < 0 ? 'next' : 'prev';
     const view = this.view;
 
-    const new_time = date_tools[`${direction}_${view}`](selected_date);
+    // new_time的校验在touchend的时候已经做过了
+    const new_time = date_tools[`${direction}_${view}`](selected_date)!;
 
     let week_name: string;
     if (view === 'month') {

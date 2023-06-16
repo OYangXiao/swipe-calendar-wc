@@ -1,4 +1,5 @@
 import { LitElement, PropertyValueMap } from 'lit';
+import type { ViewType, Date_Info } from '../types';
 /**
  * An example element.
  *

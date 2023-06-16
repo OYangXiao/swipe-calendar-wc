@@ -1,13 +1,8 @@
 {
-  "name": "swipe-calendar",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "main": "dist/swipe-calendar.js",
-  "exports": {
-    ".": "./dist/swipe-calendar.js"
-  },
-  "types": "types/my-element.d.ts",
+  "name": "@ht/component-cft-swipe-calendar",
+  "version": "0.1.9",
+  "main": "./dist/component-cft-swipe-calendar.mjs",
+  "types": "./types/index.d.ts",
   "files": [
     "dist",
     "types"
@@ -16,7 +11,10 @@
     "dev": "vite",
     "build": "tsc && vite build"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "lit": "^2.7.4"
+  },
+  "devDependencies": {
     "@babel/preset-env": "^7.21.5",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^24.1.0",
@@ -29,15 +27,18 @@
     "@web/rollup-plugin-polyfills-loader": "^1.3.1",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "core-js": "^3.30.2",
-    "lit": "^2.7.4",
     "rollup": "^3.21.5",
     "rollup-plugin-minify-html-literals": "^1.2.6",
     "rollup-plugin-summary": "^2.0.0",
     "rollup-plugin-terser": "^7.0.2",
-    "tslib": "^2.5.0"
-  },
-  "devDependencies": {
+    "tslib": "^2.5.0",
     "typescript": "^5.0.4",
-    "vite": "^4.3.5"
+    "vite": "^4.3.5",
+    "vite-plugin-babel": "^1.0.0"
+  },
+  "dependencies": {
+    "@ht/xlog": "3.4.6",
+    "@lit-labs/context": "^0.3.2",
+    "dayjs": "^1.11.8"
   }
 }

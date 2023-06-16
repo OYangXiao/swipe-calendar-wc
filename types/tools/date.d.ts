@@ -1,3 +1,4 @@
+import type { WeekStartDay, Date_Info } from '../types';
 export declare const DEFAULT_WEEKDAY_NAME: string[];
 export declare const WEEK_CONFIG: {
     week_start_day: WeekStartDay | undefined;

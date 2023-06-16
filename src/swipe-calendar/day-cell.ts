@@ -1,8 +1,10 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import dayjs from 'dayjs';
 
-import { combine_attr } from '../tools/combine-attr';
-import { DATES } from '../tools/date';
+import { combine_attr } from './tools/combine-attr';
+
+import type { Date_Info } from '../types';
 
 /**
  * An example element.
@@ -64,10 +66,8 @@ export class DayCell extends LitElement {
     if (_changedProperties.has('date-name')) {
       this.date = DATES.get(this['date-name'])!;
 
-      const today = new Date();
-      const today_date_name = `${today.getFullYear()}-${
-        today.getMonth() + 1
-      }-${today.getDate()}`;
+      const today = dayjs();
+      const today_date_name = today.format('YYYY-MM-DD');
 
       this._is_today = this.date.date_name === today_date_name;
       this._is_hidden = this.filter_hide?.(this.date) ?? false;
@@ -80,6 +80,14 @@ export class DayCell extends LitElement {
       _changedProperties.has('selected-date')
     ) {
       this._is_selected = this.date === this['selected-date'];
+    }
+
+    if(_changedProperties.has('filter_disable')) {
+      this.disabled = this.filter_disable?.(this.date) ?? false;
+    }
+
+    if(_changedProperties.has('filter_hide')) {
+      this._is_hidden = this.filter_hide?.(this.date) ?? false;
     }
   }
 
@@ -158,3 +166,6 @@ declare global {
     'day-cell': DayCell;
   }
 }
+
+// rest of your code
+

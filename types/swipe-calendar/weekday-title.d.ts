@@ -1,4 +1,5 @@
 import { LitElement, PropertyValueMap } from 'lit';
+import type { WeekStartDay } from '../types';
 /**
  * An example element.
  *
