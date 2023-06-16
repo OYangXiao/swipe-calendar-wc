@@ -2,6 +2,8 @@ import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import * as date_tools from '../tools/date';
+import type { ViewType, Date_Info } from '../types';
+
 const { MONTHS, WEEKS, DATES } = date_tools;
 
 const VIEW_CHANGE_THROTTLE_PIXEL = 10;
@@ -39,6 +41,8 @@ export class SwipeBox extends LitElement {
   private _total_height = 0;
   @state()
   private _no_transition = false;
+
+  private _next_date?: Date_Info;
 
   // 记录开始触摸的位置
   private _touch_start: undefined | { x: number; y: number } = undefined;
@@ -78,8 +82,15 @@ export class SwipeBox extends LitElement {
       this._no_transition = false;
       // 横向滑动就是上一个月下一个月(或者上一周下一周)
       if (Math.abs(this._offset_x) > 0.2 * this._body_width) {
-        this._offset_x =
-          this._offset_x > 0 ? this._body_width : -this._body_width;
+        const new_date = this._find_new_date();
+
+        if (new_date) {
+          this._offset_x =
+            this._offset_x > 0 ? this._body_width : -this._body_width;
+          this._next_date = new_date;
+        } else {
+          this._offset_x = 0;
+        }
       } else {
         this._offset_x = 0;
       }
@@ -107,14 +118,25 @@ export class SwipeBox extends LitElement {
       this._no_transition = true;
       // 横向滑动就是切换日期, 上一个月下一个月(或者上一周下一周)
       this._offset_x = offsetX;
-    } else if (Math.abs(offsetY) > VIEW_CHANGE_THROTTLE_PIXEL) {
+    } else if (this.view === 'week' && offsetY > VIEW_CHANGE_THROTTLE_PIXEL) {
+      this.change_view(offsetY);
+    } else if (this.view === 'month' && offsetY < -VIEW_CHANGE_THROTTLE_PIXEL) {
       this.change_view(offsetY);
     }
   }
 
   private _after_time_transition() {
-    if (this._offset_x === 0) return;
+    if (this._next_date) {
+      this.dispatchEvent(
+        new CustomEvent('date-change', {
+          detail: this._next_date,
+        })
+      );
+      this._next_date = undefined;
+    }
+  }
 
+  private _find_new_date() {
     const selected_date = this['selected-date'];
     const direction = this._offset_x < 0 ? 'next' : 'prev';
     const view = this.view;
@@ -139,11 +161,14 @@ export class SwipeBox extends LitElement {
         : week_dates[direction === 'prev' ? week_dates.length - 1 : 0];
     const new_date = DATES.get(date_name)!;
 
-    this.dispatchEvent(
-      new CustomEvent('date-change', {
-        detail: new_date,
-      })
-    );
+    if (
+      !date_tools.check_time_in_range(new_date, 'max') ||
+      !date_tools.check_time_in_range(new_date, 'min')
+    ) {
+      return undefined;
+    } else {
+      return new_date;
+    }
   }
 
   private _after_height_transition() {

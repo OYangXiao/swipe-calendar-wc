@@ -1,7 +1,6 @@
 {
-  "name": "swipe-calendar",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@ht/component-cft-swipe-calendar",
+  "version": "0.2.0",
   "type": "module",
   "main": "dist/swipe-calendar.js",
   "exports": {

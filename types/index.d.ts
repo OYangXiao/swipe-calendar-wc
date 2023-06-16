@@ -1,2 +1,3 @@
 export { date_converter } from './tools/date';
-export { SwipeCalendar } from './swipe-calendar';
+export type { Date_Info } from './types';
+export { SwipeCalendar, type DateChangeEvent } from './swipe-calendar';

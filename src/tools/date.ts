@@ -1,4 +1,11 @@
+import type { WeekStartDay, Date_Info } from '../types';
+
 export const DEFAULT_WEEKDAY_NAME = ['日', '一', '二', '三', '四', '五', '六'];
+
+export const BOUNDARY = {
+  max:undefined as undefined | Date_Info,
+  min:undefined as undefined | Date_Info,
+};
 
 export const WEEK_CONFIG = {
   // 一旦写入这些值,外面传入的week_start_day和no_weekends就不会对已经缓存的数据产生影响
@@ -27,7 +34,32 @@ export const WEEKS = new Map<
 >();
 export const DATES = new Map<string, Date_Info>();
 
-function create_date_info(time: Date): Date_Info {
+export function check_time_in_range(
+  time: Date_Info,
+  type: 'max' | 'min',
+) {
+  if (!BOUNDARY[type]) return true;
+  const range = BOUNDARY[type]!;
+  if (type === 'max') {
+    return (
+      time.year < range.year ||
+      (time.year === range.year && time.month < range.month) ||
+      (time.year === range.year &&
+        time.month === range.month &&
+        time.date <= range.date)
+    );
+  } else {
+    return (
+      time.year > range.year ||
+      (time.year === range.year && time.month > range.month) ||
+      (time.year === range.year &&
+        time.month === range.month &&
+        time.date >= range.date)
+    );
+  }
+}
+
+export function create_date_info(time: Date): Date_Info {
   const year = time.getFullYear();
   const month = time.getMonth() + 1;
   const date = time.getDate();

@@ -2,7 +2,9 @@ import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 import { combine_attr } from '../tools/combine-attr';
-import { DATES } from '../tools/date';
+import { DATES, check_time_in_range } from '../tools/date';
+
+import type { Date_Info } from '../types';
 
 /**
  * An example element.
@@ -72,7 +74,8 @@ export class DayCell extends LitElement {
       this._is_today = this.date.date_name === today_date_name;
       this._is_hidden = this.filter_hide?.(this.date) ?? false;
       this.disabled = this.filter_disable?.(this.date) ?? false;
-      this._not_this_month = !!this['month-name'] && this.date.month_name !== this['month-name'];
+      this._not_this_month =
+        !!this['month-name'] && this.date.month_name !== this['month-name'];
     }
 
     if (
@@ -81,11 +84,26 @@ export class DayCell extends LitElement {
     ) {
       this._is_selected = this.date === this['selected-date'];
     }
+
+    if (_changedProperties.has('filter_disable')) {
+      this.disabled = this.filter_disable?.(this.date) ?? false;
+    }
+
+    if (_changedProperties.has('filter_hide')) {
+      this._is_hidden = this.filter_hide?.(this.date) ?? false;
+    }
   }
 
   render() {
     if (this._is_hidden) {
       return;
+    }
+
+    if (
+      !check_time_in_range(this.date, 'max') ||
+      !check_time_in_range(this.date, 'min')
+    ) {
+      this.disabled = true;
     }
 
     return html`<div

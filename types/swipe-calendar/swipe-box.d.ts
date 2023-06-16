@@ -1,4 +1,5 @@
 import { LitElement, PropertyValueMap } from 'lit';
+import type { ViewType, Date_Info } from '../types';
 /**
  * An example element.
  *
@@ -14,6 +15,7 @@ export declare class SwipeBox extends LitElement {
     private _offset_y;
     private _total_height;
     private _no_transition;
+    private _next_date?;
     private _touch_start;
     private _after_animation_action?;
     private _body_width;
@@ -33,6 +35,7 @@ export declare class SwipeBox extends LitElement {
      */
     private _onTouchMove;
     private _after_time_transition;
+    private _find_new_date;
     private _after_height_transition;
     change_view(offsetY?: number): void;
     protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;

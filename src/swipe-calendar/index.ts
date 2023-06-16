@@ -11,8 +11,11 @@ import {
   next_month,
   next_week,
   prev_week,
+  create_date_info,
+  BOUNDARY,
 } from '../tools/date';
 import { JSON_parse_result } from '../tools/safe-json';
+import type { Date_Info, ViewType, WeekStartDay } from '../types';
 
 import { type WeekdayTitle } from './weekday-title';
 import './weekday-title';
@@ -23,11 +26,32 @@ import './day-cell';
 
 const today = new Date();
 
+export type DateChangeEvent = CustomEvent<{
+  date: Date_Info;
+  view: ViewType;
+  month: {
+    first_date_name: string;
+    last_date_name: string;
+    date_count: number;
+    week_names: string[];
+    dates: string[];
+  };
+  week: {
+    month_names: string[];
+    date_names: string[];
+  };
+}>;
+
 /**
- * An example element.
+ * a calendar element
  *
- * @slot - This element has a slot
- * @csspart button - The button
+ * change month by swipe left or right
+ * change view between month and week by swipe up or down
+ *
+ * select date by click or tap
+ *
+ * @fires date-change - fires when date changed
+ *
  */
 @customElement('swipe-calendar')
 export class SwipeCalendar extends LitElement {
@@ -43,6 +67,12 @@ export class SwipeCalendar extends LitElement {
 
   @property({ type: Boolean })
   'no-weekends' = false;
+
+  @property()
+  'max-date'?: string;
+
+  @property()
+  'min-date'?: string;
 
   @property({
     // 每周开始只能是周日或者周一
@@ -78,7 +108,15 @@ export class SwipeCalendar extends LitElement {
       }
     },
   })
-  'weekday-name' = ['日', '一', '二', '三', '四', '五', '六'];
+  'weekday-name': string | string[] = [
+    '日',
+    '一',
+    '二',
+    '三',
+    '四',
+    '五',
+    '六',
+  ];
 
   @property({ type: Number })
   'cell-height' = 38;
@@ -134,6 +172,7 @@ export class SwipeCalendar extends LitElement {
   private _showing_times: string[] = [];
   // swipe-box的引用
   private _swipe_box?: SwipeBox;
+
   /* #endregion */
 
   /* #region private methods */
@@ -176,23 +215,43 @@ export class SwipeCalendar extends LitElement {
       }
     }
 
+    if (changedProperties.has('max-date') && this['max-date']) {
+      const date = new Date(this['max-date']);
+      if (date.toString() === 'Invalid Date') {
+        console.error('max-date is invalid');
+      } else {
+        BOUNDARY.max = create_date_info(date);
+      }
+    }
+
+    if (changedProperties.has('min-date') && this['min-date']) {
+      const date = new Date(this['min-date']);
+      if (date.toString() === 'Invalid Date') {
+        console.error('min-date is invalid');
+      } else {
+        BOUNDARY.min = create_date_info(date);
+      }
+    }
+
     if (changedProperties.has('selected-date')) {
       this._selected_date = date_converter.from_input(this['selected-date']);
 
-      const month = MONTHS.get(this._selected_date.month_name);
+      const month = MONTHS.get(this._selected_date.month_name)!;
       // 向外通报这次日期改变的新信息
       this.dispatchEvent(
         new CustomEvent('date-change', {
           detail: {
             date: this._selected_date,
             view: this.view,
-            month,
-            week: WEEKS.get(this._selected_date.week_name),
-            show_month_days: month?.week_names
-              .map((week_name) => WEEKS.get(week_name)!.date_names)
-              .flat(),
+            month: {
+              ...month,
+              dates: month?.week_names
+                .map((week_name) => WEEKS.get(week_name)!.date_names)
+                .flat(),
+            },
+            week: WEEKS.get(this._selected_date.week_name)!,
           },
-        })
+        } as DateChangeEvent)
       );
     }
 
@@ -267,8 +326,8 @@ export class SwipeCalendar extends LitElement {
                                   date-name=${date_name}
                                   .month-name=${this.view === 'month' &&
                                   time_name}
-                                  .filter_disable=${this['filter_disable']}
-                                  .filter_hide=${this['filter_hide']}
+                                  .filter_disable=${this.filter_disable}
+                                  .filter_hide=${this.filter_hide}
                                   .selected-date=${this._selected_date}
                                   .cell-height=${this['cell-height']}
                                   .style-cell-date=${this['style-cell-date']}

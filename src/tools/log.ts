@@ -1,4 +1,4 @@
-export function log(data:any){
-    console.log(data)
-    return true
+export function log(data: any) {
+  console.log(data);
+  return true;
 }
