@@ -8,6 +8,7 @@ import type { Date_Info } from '../types';
  */
 export declare class DayCell extends LitElement {
     'date-name': string;
+    'equal-trailing-days': boolean;
     'month-name'?: string;
     'selected-date': Date_Info;
     'cell-height': number;

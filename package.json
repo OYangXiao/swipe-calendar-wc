@@ -1,12 +1,7 @@
 {
   "name": "@ht/component-cft-swipe-calendar",
-  "version": "0.2.0",
-  "type": "module",
-  "main": "dist/swipe-calendar.js",
-  "exports": {
-    ".": "./dist/swipe-calendar.js"
-  },
-  "types": "types/my-element.d.ts",
+  "version": "0.2.3",
+  "types": "types/index.d.ts",
   "files": [
     "dist",
     "types"

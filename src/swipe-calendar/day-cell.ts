@@ -17,6 +17,9 @@ export class DayCell extends LitElement {
   @property()
   'date-name'!: string;
 
+  @property({ type: Boolean })
+  'equal-trailing-days' = false;
+
   @property()
   'month-name'?: string;
 
@@ -47,10 +50,10 @@ export class DayCell extends LitElement {
   @property()
   'style-cell-title'?: string;
 
-  @property({ type: Function })
+  @property({ attribute: false })
   filter_disable?: (date: Date_Info) => boolean;
 
-  @property({ type: Function })
+  @property({ attribute: false })
   filter_hide?: (date: Date_Info) => boolean;
 
   private _is_today = false;
@@ -75,7 +78,9 @@ export class DayCell extends LitElement {
       this._is_hidden = this.filter_hide?.(this.date) ?? false;
       this.disabled = this.filter_disable?.(this.date) ?? false;
       this._not_this_month =
-        !!this['month-name'] && this.date.month_name !== this['month-name'];
+        !this['equal-trailing-days'] &&
+        !!this['month-name'] &&
+        this.date.month_name !== this['month-name'];
     }
 
     if (

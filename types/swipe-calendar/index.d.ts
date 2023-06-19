@@ -16,6 +16,8 @@ export type DateChangeEvent = CustomEvent<{
         week_names: string[];
         dates: string[];
     };
+    prev_month_dates: string[];
+    next_month_dates: string[];
     week: {
         month_names: string[];
         date_names: string[];
@@ -36,10 +38,11 @@ export declare class SwipeCalendar extends LitElement {
     'selected-date': string;
     'view': ViewType;
     'no-weekends': boolean;
+    'equal-trailing-days': boolean;
     'max-date'?: string;
     'min-date'?: string;
     'week-start-day': WeekStartDay;
-    'weekday-name': string | string[];
+    'weekday-name': string[];
     'cell-height': number;
     'style-cell-title'?: string;
     'style-cell-date'?: string;

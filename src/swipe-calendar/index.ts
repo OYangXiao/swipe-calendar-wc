@@ -7,12 +7,12 @@ import {
   WEEK_CONFIG,
   WEEKS,
   MONTHS,
-  prev_month,
   next_month,
   next_week,
   prev_week,
   create_date_info,
   BOUNDARY,
+  prev_month,
 } from '../tools/date';
 import { JSON_parse_result } from '../tools/safe-json';
 import type { Date_Info, ViewType, WeekStartDay } from '../types';
@@ -36,6 +36,8 @@ export type DateChangeEvent = CustomEvent<{
     week_names: string[];
     dates: string[];
   };
+  prev_month_dates: string[];
+  next_month_dates: string[];
   week: {
     month_names: string[];
     date_names: string[];
@@ -68,6 +70,9 @@ export class SwipeCalendar extends LitElement {
   @property({ type: Boolean })
   'no-weekends' = false;
 
+  @property({ type: Boolean })
+  'equal-trailing-days' = false;
+
   @property()
   'max-date'?: string;
 
@@ -75,6 +80,7 @@ export class SwipeCalendar extends LitElement {
   'min-date'?: string;
 
   @property({
+    type: Number,
     // 每周开始只能是周日或者周一
     converter(value) {
       return value &&
@@ -88,6 +94,7 @@ export class SwipeCalendar extends LitElement {
   'week-start-day': WeekStartDay = 0;
 
   @property({
+    attribute: false,
     converter(value) {
       if (value) {
         const data = JSON_parse_result(value);
@@ -108,15 +115,7 @@ export class SwipeCalendar extends LitElement {
       }
     },
   })
-  'weekday-name': string | string[] = [
-    '日',
-    '一',
-    '二',
-    '三',
-    '四',
-    '五',
-    '六',
-  ];
+  'weekday-name': string[] = ['日', '一', '二', '三', '四', '五', '六'];
 
   @property({ type: Number })
   'cell-height' = 38;
@@ -143,11 +142,11 @@ export class SwipeCalendar extends LitElement {
   'style-date-not-this-month'?: string;
 
   // 日期过滤函数, 返回true的日期都会
-  @property({ type: Function })
+  @property({ attribute: false })
   'filter_hide'?: (date: Date_Info) => boolean;
 
   // 过滤日期
-  @property({ type: Function })
+  @property({ attribute: false })
   'filter_disable'?: (date: Date_Info) => boolean;
   /* #endregion */
 
@@ -237,6 +236,8 @@ export class SwipeCalendar extends LitElement {
       this._selected_date = date_converter.from_input(this['selected-date']);
 
       const month = MONTHS.get(this._selected_date.month_name)!;
+      const p_month = prev_month(this._selected_date);
+      const n_month = next_month(this._selected_date);
       // 向外通报这次日期改变的新信息
       this.dispatchEvent(
         new CustomEvent('date-change', {
@@ -249,6 +250,12 @@ export class SwipeCalendar extends LitElement {
                 .map((week_name) => WEEKS.get(week_name)!.date_names)
                 .flat(),
             },
+            prev_month_dates: MONTHS.get(p_month)
+              ?.week_names.map((week_name) => WEEKS.get(week_name)!.date_names)
+              .flat(),
+            next_month_dates: MONTHS.get(n_month)
+              ?.week_names.map((week_name) => WEEKS.get(week_name)!.date_names)
+              .flat(),
             week: WEEKS.get(this._selected_date.week_name)!,
           },
         } as DateChangeEvent)
@@ -324,8 +331,12 @@ export class SwipeCalendar extends LitElement {
                               (date_name) =>
                                 html`<day-cell
                                   date-name=${date_name}
-                                  .month-name=${this.view === 'month' &&
-                                  time_name}
+                                  .equal-trailing-days=${this[
+                                    'equal-trailing-days'
+                                  ]}
+                                  .month-name=${this.view === 'month'
+                                    ? time_name
+                                    : undefined}
                                   .filter_disable=${this.filter_disable}
                                   .filter_hide=${this.filter_hide}
                                   .selected-date=${this._selected_date}
