@@ -68,6 +68,14 @@
         return date.year === 2023 && date.month === 5 && date.date === 26;
       };
 
+      calendar.on_swipe = function(data) {
+        console.log('sipwe callback data', data)
+        const {view, range} = data
+        
+        const new_date = range[Math.round(range.length / 2)]
+        return new Date(new_date)
+      }
+
       // 修改月视图/周视图
       document
         .querySelector('#view-toggle')

@@ -11,6 +11,10 @@ export declare class SwipeBox extends LitElement {
     'view': ViewType;
     'selected-date': Date_Info;
     'cell-height': number;
+    'on_swipe'?: (info: {
+        view: ViewType;
+        range: string[];
+    }) => Date;
     private _offset_x;
     private _offset_y;
     private _total_height;

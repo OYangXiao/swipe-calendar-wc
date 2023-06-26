@@ -32,6 +32,10 @@ export class SwipeBox extends LitElement {
   @property({ type: Number })
   'cell-height'!: number;
 
+  // 左右滑动之后允许设置日期
+  @property({ attribute: false })
+  'on_swipe'?: (info: { view: ViewType; range: string[] }) => Date;
+
   // 触摸时的偏移X量, 用于动画
   @state()
   private _offset_x = 0;
@@ -66,7 +70,7 @@ export class SwipeBox extends LitElement {
    * 如果是横向滑动就是切换日期, 上一个月下一个月(或者上一周下一周)
    * 如果是纵向滑动就是切换视图, 向下就是展开为月视图, 向上就是收起为周视图
    */
-  private _onTouchEnd(e: TouchEvent) {
+  private async _onTouchEnd(e: TouchEvent) {
     if (!this._touch_start) {
       return;
     }
@@ -82,7 +86,7 @@ export class SwipeBox extends LitElement {
       this._no_transition = false;
       // 横向滑动就是上一个月下一个月(或者上一周下一周)
       if (Math.abs(this._offset_x) > 0.2 * this._body_width) {
-        const new_date = this._find_new_date();
+        const new_date = await this._find_new_date();
 
         if (new_date) {
           this._offset_x =
@@ -136,32 +140,60 @@ export class SwipeBox extends LitElement {
     }
   }
 
-  private _find_new_date() {
-    const selected_date = this['selected-date'];
-    const direction = this._offset_x < 0 ? 'next' : 'prev';
-    const view = this.view;
+  private async _find_new_date() {
+    let date_name = '';
+    let pick_time = undefined as Date | undefined;
 
+    const selected_date = this['selected-date'];
+    const view = this.view;
+    const direction = this._offset_x < 0 ? 'next' : 'prev';
     const new_time = date_tools[`${direction}_${view}`](selected_date);
 
-    let week_name: string;
+    let week_name = '';
     if (view === 'month') {
       const month_weeks = MONTHS.get(new_time)!.week_names;
-      week_name =
-        month_weeks[direction === 'prev' ? month_weeks.length - 1 : 0];
+      if (this.on_swipe) {
+        pick_time = this.on_swipe({
+          view: this.view,
+          range: month_weeks
+            .map((week_name) => WEEKS.get(week_name)!.date_names)
+            .flat(),
+        });
+      } else {
+        week_name =
+          month_weeks[direction === 'prev' ? month_weeks.length - 1 : 0];
+      }
     } else {
-      week_name = new_time;
+      if (this.on_swipe) {
+        pick_time = this.on_swipe({
+          view: this.view,
+          range: WEEKS.get(new_time)!.date_names,
+        });
+      } else {
+        week_name = new_time;
+      }
     }
 
-    const week_dates = WEEKS.get(week_name)!.date_names;
-    const date_name =
-      view === 'month'
-        ? week_dates[direction === 'prev' ? 'findLast' : 'find'](
-            (_date_name) => DATES.get(_date_name)!.month_name === new_time
-          )!
-        : week_dates[direction === 'prev' ? week_dates.length - 1 : 0];
-    const new_date = DATES.get(date_name)!;
+    if (pick_time instanceof Date) {
+      console.log('on siwpe result', pick_time);
+      const year = pick_time.getFullYear();
+      const month = pick_time.getMonth() + 1;
+      const date = pick_time.getDate();
+      date_name = `${year}-${month}-${date}`;
+    } else if (week_name) {
+      const week_dates = WEEKS.get(week_name)!.date_names;
+      date_name =
+        view === 'month'
+          ? week_dates[direction === 'prev' ? 'findLast' : 'find'](
+              (_date_name) => DATES.get(_date_name)!.month_name === new_time
+            )!
+          : week_dates[direction === 'prev' ? week_dates.length - 1 : 0];
+    }
+
+    const new_date = DATES.get(date_name);
 
     if (
+      !new_date ||
       !date_tools.check_time_in_range(new_date, 'max') ||
       !date_tools.check_time_in_range(new_date, 'min')
     ) {

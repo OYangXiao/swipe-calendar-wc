@@ -53,6 +53,10 @@ export declare class SwipeCalendar extends LitElement {
     'style-date-not-this-month'?: string;
     'filter_hide'?: (date: Date_Info) => boolean;
     'filter_disable'?: (date: Date_Info) => boolean;
+    'on_swipe'?: (info: {
+        view: ViewType;
+        range: string[];
+    }) => Date;
     setDate(date: any): void;
     setView(view: 'month' | 'week'): void;
     toggleViewChange(): void;

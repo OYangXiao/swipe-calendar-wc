@@ -148,6 +148,13 @@ export class SwipeCalendar extends LitElement {
   // 过滤日期
   @property({ attribute: false })
   'filter_disable'?: (date: Date_Info) => boolean;
+
+  // 左右滑动之后允许设置日期
+  @property({ attribute: false })
+  'on_swipe'?: (info: {
+    view: ViewType;
+    range: string[];
+  }) => Date;
   /* #endregion */
 
   /* #region public methods */
@@ -303,6 +310,7 @@ export class SwipeCalendar extends LitElement {
           .cell-height=${this['cell-height']}
           .view=${this.view}
           .selected-date=${this._selected_date}
+          .on_swipe=${this.on_swipe}
           @view-change=${this._on_view_change}
           @date-change=${this._on_date_change}
           @click=${this._on_click}
