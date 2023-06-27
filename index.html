@@ -29,9 +29,8 @@
         view="month"
         no-weekends
         equal-trailing-days
-        max-date="2023-4-29"
-        min-date="2023-2-13"
-        selected-date="2023-3-14"
+        max-date="2023-12-23"
+        min-date="2023-6-26"
         weekday-name="日,一,二,三,四,五,六"
         cellHeight="50"
       >
@@ -72,8 +71,7 @@
         console.log('sipwe callback data', data)
         const {view, range} = data
         
-        const new_date = range[Math.round(range.length / 2)]
-        return new Date(new_date)
+        return new Date()
       }
 
       // 修改月视图/周视图

@@ -143,6 +143,7 @@ export class SwipeBox extends LitElement {
   private async _find_new_date() {
     let date_name = '';
     let pick_time = undefined as Date | undefined;
+    let range = [] as string[];
 
     const selected_date = this['selected-date'];
     const view = this.view;
@@ -153,11 +154,12 @@ export class SwipeBox extends LitElement {
     if (view === 'month') {
       const month_weeks = MONTHS.get(new_time)!.week_names;
       if (this.on_swipe) {
+        range = month_weeks
+          .map((week_name) => WEEKS.get(week_name)!.date_names)
+          .flat();
         pick_time = this.on_swipe({
           view: this.view,
-          range: month_weeks
-            .map((week_name) => WEEKS.get(week_name)!.date_names)
-            .flat(),
+          range,
         });
       } else {
         week_name =
@@ -165,9 +167,10 @@ export class SwipeBox extends LitElement {
       }
     } else {
       if (this.on_swipe) {
+        range = WEEKS.get(new_time)!.date_names;
         pick_time = this.on_swipe({
           view: this.view,
-          range: WEEKS.get(new_time)!.date_names,
+          range,
         });
       } else {
         week_name = new_time;
@@ -180,6 +183,9 @@ export class SwipeBox extends LitElement {
       const month = pick_time.getMonth() + 1;
       const date = pick_time.getDate();
       date_name = `${year}-${month}-${date}`;
+      if (!range.includes(date_name)) {
+        date_name = '';
+      }
     } else if (week_name) {
       const week_dates = WEEKS.get(week_name)!.date_names;
       date_name =
