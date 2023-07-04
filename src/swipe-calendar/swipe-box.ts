@@ -222,6 +222,8 @@ export class SwipeBox extends LitElement {
         ? (this.view === 'month' ? -1 : 1) * VIEW_CHANGE_THROTTLE_PIXEL
         : offsetY;
 
+    // console.log('change view', offsetY, this.view, _offsetY);
+
     // 吃掉这次触摸事件, 防止触发点击事件
     this._touch_start = undefined;
     const { month_name, week_index } = this['selected-date'];
@@ -229,12 +231,15 @@ export class SwipeBox extends LitElement {
     this._offset_y = week_index * -this['cell-height'];
 
     if (_offsetY > 0) {
+      // console.log('month name', month_name);
       // 切换到month视图
       this._total_height =
         MONTHS.get(month_name)!.week_names.length * this['cell-height'];
 
       // 从week切换到month期间, 会有一个动画
       // 需要立刻更新内容, 以免展开区域时内容不可见
+      // console.log('dispatch view change', 'month', this._total_height);
+      this.view = 'month';
       this.dispatchEvent(
         new CustomEvent('view-change', {
           detail: 'month',
@@ -249,6 +254,13 @@ export class SwipeBox extends LitElement {
       // 可见内容逐渐减少
       // 动画期间保持可见内容不变
       // 直到动画结束后再更新内容
+      // console.log(
+      //   'dispatch view change',
+      //   'week',
+      //   this._total_height,
+      //   this['cell-height']
+      // );
+      this.view = 'week';
       this._after_animation_action = () => {
         this.dispatchEvent(
           new CustomEvent('view-change', {
@@ -268,6 +280,8 @@ export class SwipeBox extends LitElement {
     ) {
       this._offset_x = 0;
       if (_changedProperties.get('view') === 'week' && this.view === 'month') {
+        // console.log('change view1', 'week -> month');
+        // console.log('change selected date1', this['selected-date']);
         // 如果是从week视图切换到month视图
         // 设置一个timeout保证view正确渲染
         // 然后再设置新的offset_y即可产生动画
@@ -280,10 +294,13 @@ export class SwipeBox extends LitElement {
         _changedProperties.get('view') === 'month' &&
         this.view === 'week'
       ) {
+        // console.log('change view2', 'month -> week');
+        // console.log('change selected date2', this['selected-date']);
         // 如果是从month视图切换到week视图
         this._no_transition = true;
         this._offset_y = 0;
       } else {
+        // console.log('change selected date3, changed date', this['selected-date']);
         this._no_transition = true;
         this._offset_y = 0;
         this._total_height =
@@ -311,6 +328,7 @@ export class SwipeBox extends LitElement {
   }
 
   render() {
+    // console.log('render swipe box', this.view, this._total_height)
     return html`
       <div
         class="ht-swipe-calendar__swipe-box"

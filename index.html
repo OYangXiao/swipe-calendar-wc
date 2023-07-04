@@ -50,7 +50,7 @@
 
       // 监听日历组件选中的日期
       calendar.addEventListener('date-change', (e) => {
-        console.log('date-change', e.detail)
+        console.log('date-change', e.detail);
         if (e.detail) {
           document.querySelector('#selected-time').innerHTML =
             e.detail.year + '-' + e.detail.month + '-' + e.detail.date;
@@ -67,12 +67,12 @@
         return date.year === 2023 && date.month === 5 && date.date === 26;
       };
 
-      calendar.on_swipe = function(data) {
-        console.log('sipwe callback data', data)
-        const {view, range} = data
-        
-        return new Date()
-      }
+      calendar.on_swipe = function (data) {
+        console.log('sipwe callback data', data);
+        const { view, range } = data;
+
+        return new Date();
+      };
 
       // 修改月视图/周视图
       document
@@ -88,6 +88,16 @@
           const date = document.querySelector('#date-input').value;
           calendar.setDate(date);
         });
+
+      let day = new Date();
+      setInterval(() => {
+        day = new Date(day.getTime() + 1000 * 60 * 60 * 24);
+        calendar.setDate(day);
+      }, 2000);
+
+      setInterval(() => {
+        calendar.toggleViewChange();
+      }, 1500);
     </script>
   </body>
 </html>
