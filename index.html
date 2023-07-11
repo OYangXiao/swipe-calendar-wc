@@ -8,20 +8,43 @@
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="./src/swipe-calendar/index.ts"></script>
     <style>
+      html {
+        height: 100%;
+        overflow: hidden;
+      }
       body {
+        height: 100%;
+        overflow: hidden;
         margin: 0;
+        font-size: 30px;
+        display: flex;
+        flex-direction: column;
       }
 
       .calendar-wrapper {
         background-color: #252737;
         padding: 8px 0;
       }
+
+      .swipe-box {
+        flex: 1;
+        overflow: auto;
+        padding: 8px 0;
+      }
+
+      .swipe-box > div {
+        height: 100px;
+        background-color: orange;
+        margin-bottom: 8px;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     </style>
   </head>
 
   <body style="margin: 0">
-    <div id="selected-time"></div>
-
     <!-- <swipe-calendar></swipe-calendar> -->
     <div class="calendar-wrapper">
       <swipe-calendar
@@ -36,26 +59,54 @@
       >
       </swipe-calendar>
     </div>
-
-    <div style="margin-top: 10px">
+    <div class="swipe-box">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+    </div>
+    <!-- <div style="margin-top: 10px">
       <button id="view-toggle">点击切换月视图/周视图</button>
     </div>
 
     <div style="margin-top: 10px">
       <input type="date" id="date-input" />
       <button id="date-setter">修改日期</button>
-    </div>
+    </div> -->
     <script>
       var calendar = document.querySelector('#calendar');
 
       // 监听日历组件选中的日期
-      calendar.addEventListener('date-change', (e) => {
-        console.log('date-change', e.detail);
-        if (e.detail) {
-          document.querySelector('#selected-time').innerHTML =
-            e.detail.year + '-' + e.detail.month + '-' + e.detail.date;
-        }
-      });
+      // calendar.addEventListener('date-change', (e) => {
+      //   console.log('date-change', e.detail);
+      //   if (e.detail) {
+      //     document.querySelector('#selected-time').innerHTML =
+      //       e.detail.year + '-' + e.detail.month + '-' + e.detail.date;
+      //   }
+      // });
 
       // 设置禁用日期
       calendar.filter_disable = function (date) {
@@ -74,30 +125,61 @@
         return new Date();
       };
 
-      // 修改月视图/周视图
+      var startX = 0;
+      var startY = 0;
+      var swipeConsumed = false;
+      document.querySelector('.swipe-box').addEventListener('scroll', function (e) {
+        console.log('scroll', e);
+      });
       document
-        .querySelector('#view-toggle')
-        .addEventListener('click', function () {
-          calendar.toggleViewChange();
+        .querySelector('.swipe-box')
+        .addEventListener('touchstart', function (e) {
+          // e.preventDefault()
+          // console.log('touchstart', e);
+          swipeConsumed = false;
+          const { clientX, clientY } = e.touches[0];
+          startX = clientX;
+          startY = clientY;
         });
+      document
+        .querySelector('.swipe-box')
+        .addEventListener('touchmove', function (e) {
+          // e.preventDefault()
+          console.log('touchmove', e);
+          if (swipeConsumed) {
+            return;
+          }
+
+          const { clientX, clientY } = e.touches[0];
+
+          if (Math.abs(clientX - startX) > Math.abs(clientY - startY)) {
+            e.preventDefault();
+          } else {
+            swipeConsumed = true;
+            e.stopPropagation();
+            if (clientY - startY > 0) {
+              console.log('向下滑动');
+            } else {
+              console.log('向上滑动');
+            }
+            calendar.toggleViewChange();
+          }
+        });
+
+      // 修改月视图/周视图
+      // document
+      //   .querySelector('#view-toggle')
+      //   .addEventListener('click', function () {
+      //     calendar.toggleViewChange();
+      //   });
 
       // 修改日历组件日期
-      document
-        .querySelector('#date-setter')
-        .addEventListener('click', function () {
-          const date = document.querySelector('#date-input').value;
-          calendar.setDate(date);
-        });
-
-      let day = new Date();
-      setInterval(() => {
-        day = new Date(day.getTime() + 1000 * 60 * 60 * 24);
-        calendar.setDate(day);
-      }, 2000);
-
-      setInterval(() => {
-        calendar.toggleViewChange();
-      }, 1500);
+      // document
+      //   .querySelector('#date-setter')
+      //   .addEventListener('click', function () {
+      //     const date = document.querySelector('#date-input').value;
+      //     calendar.setDate(date);
+      //   });
     </script>
   </body>
 </html>

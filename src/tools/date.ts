@@ -3,8 +3,8 @@ import type { WeekStartDay, Date_Info } from '../types';
 export const DEFAULT_WEEKDAY_NAME = ['日', '一', '二', '三', '四', '五', '六'];
 
 export const BOUNDARY = {
-  max:undefined as undefined | Date_Info,
-  min:undefined as undefined | Date_Info,
+  max: undefined as undefined | Date_Info,
+  min: undefined as undefined | Date_Info,
 };
 
 export const WEEK_CONFIG = {
@@ -34,10 +34,7 @@ export const WEEKS = new Map<
 >();
 export const DATES = new Map<string, Date_Info>();
 
-export function check_time_in_range(
-  time: Date_Info,
-  type: 'max' | 'min',
-) {
+export function check_time_in_range(time: Date_Info, type: 'max' | 'min') {
   if (!BOUNDARY[type]) return true;
   const range = BOUNDARY[type]!;
   if (type === 'max') {
@@ -218,6 +215,16 @@ export const date_converter = {
       _time = new Date();
     }
 
+    if (
+      WEEK_CONFIG.no_weekends &&
+      (_time.getDay() === 0 || _time.getDay() === 6)
+    ) {
+      if (_time.getDay() === 0) {
+        _time.setDate(_time.getDate() + 1);
+      } else if (_time.getDay() === 6) {
+        _time.setDate(_time.getDate() - 1);
+      }
+    }
     const year = _time.getFullYear();
     const month = _time.getMonth() + 1;
 
